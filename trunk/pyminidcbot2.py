@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: cp1251 -*-
 import socket, array, time, string
 class pyminidcbot2:
     HOST = '10.4.20.7'
@@ -26,19 +26,28 @@ class pyminidcbot2:
 
     def parsecommand(self,gotstring):
     #смотрим на полученную строку и выполняем действия
-        str = gotstring.split()
-        if (self.debugflag): print 'DEBUG: '+gotstring
-        if str[0] == '$Lock':
-            #print 'Here the lock'+str[0]+' and param '+str[1]
-            self.s.send('$Key '+self.lock2key2(str[1])+'|')
-            self.s.send('$ValidateNick '+self.nick+'|')
-        elif str[0] == '$HubName':
-                print 'HubName= '
-                print str[1:-1]
-        elif str[0] == '$Hello':
-                print '\nSucessfully logged in'
-                return 'Logged'
-        if str[0]: return str[0]
+        if (gotstring != ''):
+            str = gotstring.split()
+            if (self.debugflag): print 'DEBUG: '+gotstring
+            if str[0] == '$Lock':
+                #print 'Here the lock'+str[0]+' and param '+str[1]
+                self.s.send('$Key '+self.lock2key2(str[1])+'|')
+                self.s.send('$ValidateNick '+self.nick+'|')
+            elif str[0] == '$HubName':
+                    print 'HubName= '
+                    print str[1:-1]
+            elif str[0] == '$UserIP': # $Hello
+                    if (self.debugflag): print '\nGot $UserIP'
+                    
+            elif str[0] == '$Hello':
+                    self.s.send('$Version 1,0091|')
+                    if (self.debugflag): print 'DEBUG: Sending $Version'
+                    self.s.send('$MyINFO $ALL '+self.nick+' simple python bot$ $100$bot@bot.com$'+self.sharesize+'$|')
+                    if (self.debugflag): print 'DEBUG: Sending $MyINFO'
+            elif str[0] == '$HubName':
+                        if (self.debugflag): print 'DEBUG: Got $HubName - login complete'
+                        return 'Logged'
+            if str[0]: return str[0]
         return
     def lock2key2(self,lock):
         "Generates response to $Lock challenge from Direct Connect Servers"
@@ -69,27 +78,15 @@ class pyminidcbot2:
 
         return
     def logintohub(self):
-        
         print 'connecting....'
         self.s.connect((self.HOST, self.PORT))
         self.s.send('Hello, world|')
         self.loginloop()
-        #print 'back'
-        self.s.send('$Version 1,0091|')
-        self.s.send('$MyINFO $ALL '+self.nick+' simple python bot$ $100$bot@bot.com$'+self.sharesize+'$|')
-        print 'myinfo sent'
-        t=self.readsock(self.s)
-        print '\nafter version'+t
-        t=self.readsock(self.s)
-        print t
-        self.s.send('<'+self.nick+'> LOL|')
-        t=self.readsock(self.s)
-        print 'xz'+t
-        self.s.send('$GetNickList|')
-        t=self.readsock(self.s)
-        print 'after nicklist'+t
         return
+    def saytest(self):
+        self.s.send('<'+self.nick+'> Hi! I\'m an ugly bot written in Python by dr-evil (c)|')
     
 
 t=pyminidcbot2()
 t.logintohub()
+t.saytest()
