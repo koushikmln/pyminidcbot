@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: cp1251 -*-
-import socket, array, time, string
+import socket, array, time, string,sys
 class pyminidcbot2:
     HOST = '10.4.20.7'
     PORT = 411
     nick = 'MegaBotNick'
-    sharesize='1000000'
-    debugflag=1
+    sharesize='1501200'
+    debugflag=0
+    commanddebug=1
+    ownernick='dr-evil'
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     def readsock(self,sock):
         buff = ""
@@ -44,8 +46,8 @@ class pyminidcbot2:
                     if (self.debugflag): print 'DEBUG: Sending $Version'
                     self.s.send('$MyINFO $ALL '+self.nick+' simple python bot$ $100$bot@bot.com$'+self.sharesize+'$|')
                     if (self.debugflag): print 'DEBUG: Sending $MyINFO'
-            elif str[0] == '$HubName':
-                        if (self.debugflag): print 'DEBUG: Got $HubName - login complete'
+            elif str[0] == '$HubTopic':
+                        if (self.debugflag): print 'DEBUG: Got $HubTopic - login complete'
                         return 'Logged'
             if str[0]: return str[0]
         return
@@ -85,8 +87,37 @@ class pyminidcbot2:
         return
     def saytest(self):
         self.s.send('<'+self.nick+'> Hi! I\'m an ugly bot written in Python by dr-evil (c)|')
-    
+        
+    def saytochat(self,message):
+        self.s.send('<'+self.nick+'> '+message+'|')
+        return
+        
+    def commands(self,mycommand):
+        cstr = mycommand.split()
+        lsize=len(cstr)
+        ti=0
+        if (self.commanddebug):
+            while ti != lsize:
+                print '%d=%s' %(ti,cstr[ti])
+                ti=ti+1
+        if (cstr[1]=='\QUIT'):
+                self.saytochat('Leaving this hub.... bye all')
+                sys.exit()
+        
+        return
+    def mainloop(self):
+        while 1:
+            data=self.readsock(self.s)
+            if (self.debugflag): print 'DEBUG: '+data
+            if (data != ''):
+                str = data.split()
+                if (str[0]=='<'+self.ownernick+'>'):
+                        print 'DEBUG: GOT OWNER MESSAGE!!!!!!!'+data
+                        self.commands(data)
+            
+        return
 
 t=pyminidcbot2()
 t.logintohub()
-t.saytest()
+#t.saytochat('My message test')
+t.mainloop()
