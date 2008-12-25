@@ -9,11 +9,16 @@ class ClientThread(threading.Thread):
         self.channel = channel
         self.details = details
         threading.Thread.__init__(self)
+    def downloader(self):
+        while 1:
 
+
+            return 0
     def run(self):
+
         print 'Received connection:', self.details[0]
         self.channel.settimeout(10)
-        self.channel.send('test') #this sent to channel
+        self.channel.send('$Direction Download 75|') #this sent to channel
         outfile=open(self.details[0]+'.tmp','wb')
         print 'file opened to write'
         buff=""
@@ -22,7 +27,7 @@ class ClientThread(threading.Thread):
                 while True:
                     t = self.channel.recv(1)
                     buff += t
-            except socket.timeout: pass    
+            except socket.timeout: pass
             except socket.error, msg: break
         print 'got from connect '+t
         outfile.write(t)
@@ -31,16 +36,16 @@ class ClientThread(threading.Thread):
 
 
 class pyminidcbot2:
-    HOST = '10.4.20.7'
+    HOST = 'dc.elenet.info'
     PORT = 411
-    nick = 'MegaBotNick'
+    nick = '0PyMiniDCBot'
     sharesize='1501200000'
     debugflag=1
     commanddebug=1
-    ownernick='dr-evil'
+    ownernick='[elenet]dr-evil'
     loggedon=0
     havenicklist=0
-    myip='10.4.255.150'
+    myip='10.0.0.197'
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tmpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     def readsock(self,sock):
@@ -74,7 +79,7 @@ class pyminidcbot2:
                 return    # Обрабатываем ошибку сокета
         # Здесь в buff будет целый пакет, делаем с ним много всякого полезного...
         return buff
-        
+
         return
     def parsecommand(self,gotstring):
     #смотрим на полученную строку и выполняем действия
@@ -85,12 +90,9 @@ class pyminidcbot2:
                 #print 'Here the lock'+str[0]+' and param '+str[1]
                 self.s.send('$Key '+self.lock2key2(str[1])+'|')
                 self.s.send('$ValidateNick '+self.nick+'|')
-            elif str[0] == '$HubName':
-                print 'Got HubName'
-                self.loggedon=1
             elif str[0] == '$UserIP': # $Hello
                     if (self.debugflag): print '\nGot $UserIP'
-                    
+
             elif str[0] == '$Hello':
                     self.s.send('$Version 1,0091|')
                     if (self.debugflag): print 'DEBUG: Sending $Version'
@@ -137,13 +139,13 @@ class pyminidcbot2:
         return
     def saytest(self):
         self.s.send('<'+self.nick+'> Hi! I\'m an ugly bot written in Python by dr-evil (c)|')
-        
+
     def saytochat(self,message):
         self.s.send('<'+self.nick+'> '+message+'|')
         return
     def rawprint(self,message):
         self.s.send(message)
-        
+
     def commands(self,mycommand):
         cstr = mycommand.split()
         lsize=len(cstr)
@@ -155,44 +157,71 @@ class pyminidcbot2:
         if (cstr[1]=='\QUIT'):
                 self.saytochat('Leaving this hub.... bye all')
                 sys.exit()
-        
+        if (cstr[1]=='\GET'):
+                self.saytochat('Getting filelist....')
+                self.downloadfilelist('[elenet]dr-evil')
+
         return
+    def upload(self):
+        return 0
+
     def mainloop(self):
         while 1:
             data=self.readsock(self.s)
-            if (self.debugflag): print 'DEBUGdata: '+data
+
             if (data != ''):
                 str = data.split()
+                #print '------------DEBUG: '+str[0]
+                if (str[0] !='$Search') and (str[0] !='$MyINFO') and (str[0] !='$Hello') and (str[0] !='$Quit'):   print 'DEBUGdataML: '+data
                 if (str[0]=='<'+self.ownernick+'>'):
                         print 'DEBUG: GOT OWNER MESSAGE!!!!!!!'+data
                         self.commands(data)
+                elif ((str[0]=='$Hello') and (str[1]==self.nick)):
+                        print '-----DEBUGdata: We finished logging on. Yahoo!'
+                        self.loggedon=1
+
                 elif (str[0])=='$NickList':
                         print 'got nicklist'
                         self.getnicklist(str[1])
+                elif (str[0])=='$ConnectToMe':
+                        print '-----DEBUGdata: Got connect request to '+str[2]
+                        self.upload()
+
             if ((self.loggedon==1) and (self.havenicklist==0)):
                 self.rawprint('$GetNickList|')
-                print "requesting nicklist"
-            time.sleep(3)
-            print 'requesting download'
-            #self.downloadfilelist('dr-evil')
+                print "-----DEBUGdata: requesting nicklist"
+#            time.sleep(3)
+#            print 'requesting download'
+
         return
     def getnicklist(self,nicks):
         nicklist=nicks.split("$$")
         print 'processing nicklist'
         print len(nicklist)
         self.havenicklist=1
+        #self.downloadfilelist('[elenet]dr-evil')
         return
+
     def downloadfilelist(self,nick):
+        timeout=15
+        starttime=time.time()
         #create an INET, STREAMing socket
-        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        serversocket.bind((self.myip, 32000))
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(('', 32000))
+        server.settimeout(timeout)
         #become a server socket
-        serversocket.listen(5)
-        #self.rawprint('$ConnectToMe dr-evil 10.4.255.150:32000|') #establish a connect with client
-        channel, details = serversocket.accept()
-        print 'listening socket....'
-        ClientThread(channel, details).start()
-        
+        self.rawprint('$ConnectToMe [elenet]dr-evil 217.195.88.66:32000 |') #establish a connect with client
+        print 'listening socket....111'
+        server.listen(5)
+        while time.time() <= starttime+timeout:
+            try:
+                print 'going....'
+                channel, details = server.accept()
+                ClientThread(channel, details).run()
+            except socket.timeout:
+                print 'timeout :('
+                break
+
         return
 t=pyminidcbot2()
 t.logintohub()
