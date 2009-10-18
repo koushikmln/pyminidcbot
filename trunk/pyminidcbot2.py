@@ -42,7 +42,7 @@ class pyminidcbot2:
     sharesize='1501200000'
     debugflag=1
     commanddebug=1
-    ownernick='[elenet]dr-evil'
+    ownernick='dr-evil'
     loggedon=0
     havenicklist=0
     myip='10.0.0.197'
