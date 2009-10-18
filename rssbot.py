@@ -6,14 +6,14 @@ from func import lock2key2
 
 #main features - login to hub, and announce new rss entries
 class rssbot:
-    HOST='dc.elenet.info'
+    HOST='hub'
     PORT=411
     debug=1
     #share = 2Gb
     sharesize=1024*1024*1024*100
     botnick = 'RssBot'
-    botpassword='1234321'
-    botip='10.4.255.156'
+    botpassword='password'
+    botip='127.0.0.1'
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ownernick='dr-evil'
     rssurl="http://core.arbital.ru/rss.xml"
@@ -55,7 +55,7 @@ class rssbot:
 
 
     def rss(self):
-        #self.saytochat('Новое на хабе:')
+        self.saytochat('Новое на хабе:')
         tlist=" "
         d=feedparser.parse(self.rssurl)
         print "rss got"
