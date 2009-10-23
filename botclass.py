@@ -25,7 +25,7 @@ class PyBot:
     #Basic login to hub method. If we got any $Search - than everything is done
     def login(self):
         self.serversocket.connect((self.HOST,self.PORT))
-        print 'Connection established'
+        if self.debug==1: print 'Connection established'
         while 1:
             t=readsock(self.serversocket)
             if self.debug==1: print t
@@ -50,7 +50,8 @@ class PyBot:
                             print 'Currently  '+str(len(nicklist))+' users online, including '+str(len(oplist))+ ' Operators'
                     if hubmsg[0]=='$Search':
                         #it seems that we have succesfully loggen on to hub :)
-                        print "Login complete."
+                        if self.debug >= 1:
+                            print "Login complete."
                         
                         return
                 
