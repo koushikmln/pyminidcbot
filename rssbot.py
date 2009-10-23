@@ -35,7 +35,7 @@ class rssbot(PyBot):
         rssdone=0
         while rssdone==0:
             if rssdone !=1:
-                    #self.rss()
+                    self.rss()
                     print "rssdone"
                     rssdone=1
             
