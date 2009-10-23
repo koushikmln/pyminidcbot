@@ -8,6 +8,7 @@ class PyBot:
     HOST='hub'
     PORT=411
     debug=0
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sharesize=1024*1024*1024*100
     botnick = 'DefaultBot'
     botpassword='password'
@@ -57,13 +58,13 @@ class PyBot:
             
             
         return
-    
+    def processownercommands(self):
+        return
     
     
     def workloop(self):
         #do things
-        return
-    
+        return    
        
     
     
