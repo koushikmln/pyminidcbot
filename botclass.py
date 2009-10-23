@@ -20,7 +20,9 @@ class PyBot:
     def saytochat(self,message):
         self.serversocket.send('<'+self.botnick+'> '+message+'|')
         
-        
+    def saytochat_me(self,message):
+        #we using /me for client parsing
+        self.serversocket.send('<'+self.botnick+'> '+'/me '+message+'|')
         
     #Basic login to hub method. If we got any $Search - than everything is done
     def login(self):
