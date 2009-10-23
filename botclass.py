@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-### bot.class.py
+# -*- coding: cp1251 -*-
+### botclass.py
 ### bot class definition v 0.1 alpha
 from func import *
 class PyBot:
