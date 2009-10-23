@@ -8,7 +8,7 @@ from botclass import *
 class rssbot(PyBot):
     HOST='10.4.20.2'
     PORT=411
-    debug=1
+    debug=0
     #share = 2Gb
     sharesize=1024*1024*1024*100
     botnick = 'RssBot'
@@ -35,7 +35,7 @@ class rssbot(PyBot):
         rssdone=0
         while rssdone==0:
             if rssdone !=1:
-                    self.rss()
+                    #self.rss()
                     print "rssdone"
                     rssdone=1
             
