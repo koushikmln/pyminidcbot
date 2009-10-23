@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+### fumc.py version 0.1 
+###
+
 import socket, array
 def lock2key2(lock):
         "Generates response to $Lock challenge from Direct Connect Servers"
