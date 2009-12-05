@@ -24,6 +24,10 @@ class PyBot:
         #we using /me for client parsing
         self.serversocket.send('<'+self.botnick+'> '+'/me '+message+'|')
         
+    def saycommand(self,command):
+        self.serversocket.send(command+'|')
+        
+        
     #Basic login to hub method. If we got any $Search - than everything is done
     def login(self):
         self.serversocket.connect((self.HOST,self.PORT))
