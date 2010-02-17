@@ -2,7 +2,17 @@
 ### fumc.py version 0.1 
 ###
 
-import socket, array
+import socket, array, fcntl, struct
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+
 def lock2key2(lock):
         "Generates response to $Lock challenge from Direct Connect Servers"
         lock = array.array('B', lock)
