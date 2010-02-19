@@ -1,15 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.6
 # -*- coding: cp1251 -*-
 #testing bot - for testing new features
 from botclass import *
 from func import *
-import random
+import random, io
+
+
+
 
 class TestBot(PyBot):
     botnick='TestBot'
-    HOST='10.4.20.2'
-    botip='10.4.255.156'
-    debug=0
+    HOST='127.0.0.1'
+    PORT=4111
+    botif='eth0'
+    debug=1
     #for testing will use @ as command prefix
     commandprefix='@'
     
@@ -26,31 +30,56 @@ class TestBot(PyBot):
         return
     
     def DownloadFL(self,Bnick):
+        print 'Trying...'
+        botip = get_ip_address(self.botif)
+        print 'My up is: '+botip
+        
+        useport=findfreeport(57017,58000)
+        
         
         ds = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ds.bind((self.botip, 55445))
-        print 'Started to listen port 55445'
-        self.saycommand('$ConnectToMe '+Bnick+' '+self.botip+':55445')
+        ds.bind((self.botip, useport))
+        print 'Started to listen port '+str(useport)
+        ds.listen(1)
+        self.saycommand('$ConnectToMe '+Bnick+' '+self.botip+':'+str(useport)+'|')
         while 1:
-            ds.listen(1)
+            
             csock, caddr = ds.accept()
             print 'accepted connection from '+str(caddr)
             while 1:
                 
-                csock.send('$MyNick '+self.botnick+'|')
-                ct=readsock(csock)
-                print 'Sent my nick'
-                print 'Got '+str(ct)
+                #csock.send('$MyNick '+self.botnick+'|')
+                #ct=readsock(csock)
+                #print 'Sent my nick'
+                #print 'Got '+str(ct)
                 while 1:
                     t=readsock(csock)
                     print 'Got '+t
                     text=t.split()
-                    if text[0]=='$MyNick': csock.send('$Lock EXTENDEDPROTOCOLABCABCABCABCABCABC Pk=DCPLUSPLUS0.706ABCABC|')
+                    if text[0]=='$MyNick': csock.send('$MyNick '+self.botnick+'|')
                     if text[0]=='$Lock':
-                        csock.send('$Lock '+lock2key2(text[1])+'|')
-                        csock.send('$Direction Download '+str(random.randint(1,100000))+'|')
+                        csock.send('$Lock EXTENDEDPROTOCOLABCABCABCABCABCABC Pk=DCPLUSPLUS0.706ABCABC|')
+                        #print 'Trying to generate a $Key from: '+str(text[1])
+                        zz=lock2key2(text[1])
+                        #csock.send('$Key '+zz+' |')
+                        print '$key sent!'
+                        #csock.send('$Direction Download '+str(random.randint(1,100000))+'|')
                     if text[0]=='$Key':
+                        #csock.send('$ADCGET file files.xml.bz2 0 -1 ZL1|')
+                        csock.send('$Supports MiniSlots XmlBZList ADCGet TTHL TTHF ZLIG |')
+                        csock.send('$Direction Download 77777|')
+                        csock.send('$Key '+zz+' |')
                         csock.send('$ADCGET file files.xml.bz2 0 -1 ZL1|')
+                        #csock.send('$Get MyList.DcLst$1|')
+                    if text[0]=='$ADCSND':
+                        filename='files.xml.bz2'
+                        print 'Reading '+text[4]+' bytes of data'
+                        tf=readsock_counted(csock,int(text[4]))
+                        print 'Got '+str(len(tf))
+                        FILE = io.open(filename,"wb")
+                        FILE.write(tf)
+                        FILE.close
+                        #print tf
                     #if text[0]=='':
                     #random.randint(1,10000)
         return
