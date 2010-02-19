@@ -4,6 +4,23 @@
 
 import socket, array, fcntl, struct
 
+def findfreeport(startport, endport):
+        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
+        port = startport
+        while port < endport:
+                try:
+                        serversocket.bind(('localhost', port))
+                # You may want: serversocket.bind((socket.gethostname(), port))
+                except socket.error:
+                                port = port+1
+                                raise
+                else:
+                        break
+        serversocket.close()
+        print "Found port", port
+        return port
+
+
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return socket.inet_ntoa(fcntl.ioctl(
@@ -12,9 +29,28 @@ def get_ip_address(ifname):
         struct.pack('256s', ifname[:15])
     )[20:24])
 
+def lock_to_key(lock):
+        # "lock" must be the exact lock character sequence, not the whole command.
+# i.e. if the command is $Lock blah pk=bleh|, lock should be "blah"
+
+        "Decrypts lock to key."
+        key = {}
+        for i in xrange(1, len(lock)):
+                key[i] = ord(lock[i]) ^ ord(lock[i-1])
+                key[0] = ord(lock[0]) ^ ord(lock[len(lock)-1]) ^ ord(lock[len(lock)-2]) ^ 5
+        for i in xrange(0, len(lock)):
+                key[i] = ((key[i]<<4) & 240) | ((key[i]>>4) & 15)
+                out = ""
+        for i in xrange(0, len(key)):
+                if key[i] in (0, 5, 36, 96, 124, 126):
+                        out += "/%%DCN%03d%%/" % (key[i],)
+        else:
+                out += chr(key[i])
+        return out
 
 def lock2key2(lock):
         "Generates response to $Lock challenge from Direct Connect Servers"
+        print 'Generating $Key from: '+lock
         lock = array.array('B', lock)
         ll = len(lock)
         key = list('0'*ll)
