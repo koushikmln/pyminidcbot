@@ -13,7 +13,10 @@ class TestBot(PyBot):
     HOST='127.0.0.1'
     PORT=4111
     botif='eth0'
+    botip='127.0.0.1'
     debug=1
+    #for temp
+    useport=50006
     #for testing will use @ as command prefix
     commandprefix='@'
     
@@ -31,17 +34,11 @@ class TestBot(PyBot):
     
     def DownloadFL(self,Bnick):
         print 'Trying...'
-        botip = get_ip_address(self.botif)
-        print 'My up is: '+botip
-        
-        useport=findfreeport(57023,58000)
-        
-        
         ds = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ds.bind((self.botip, useport))
-        print 'Started to listen port '+str(useport)
+        ds.bind((self.botip, self.useport))
+        print 'Started to listen port '+str(self.useport)
         ds.listen(1)
-        self.saycommand('$ConnectToMe '+Bnick+' '+self.botip+':'+str(useport)+'|')
+        self.saycommand('$ConnectToMe '+Bnick+' '+self.botip+':'+str(self.useport)+'|')
         while 1:
             
             csock, caddr = ds.accept()
@@ -66,10 +63,10 @@ class TestBot(PyBot):
                         #csock.send('$Direction Download '+str(random.randint(1,100000))+'|')
                     if text[0]=='$Key':
                         #csock.send('$ADCGET file files.xml.bz2 0 -1 ZL1|')
-                        csock.send('$Supports MiniSlots XmlBZList ADCGet TTHL TTHF ZLIG |')
+                        csock.send('$Supports MiniSlots XmlBZList ADCGet |')
                         csock.send('$Direction Download 77777|')
                         csock.send('$Key '+zz+' |')
-                        csock.send('$ADCGET file files.xml.bz2 0 -1 ZL1|')
+                        csock.send('$ADCGET file files.xml.bz2 0 -1|')
                         #csock.send('$Get MyList.DcLst$1|')
                     if text[0]=='$ADCSND':
                         filename='files.xml.bz2'
@@ -101,5 +98,5 @@ class TestBot(PyBot):
 tbot=TestBot()
 tbot.login()
 print 'Login Complete'
-tbot.DownloadFL('dr-evil')
+tbot.DownloadFL('777')
 #tbot.workloop()
