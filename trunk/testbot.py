@@ -22,8 +22,8 @@ class TestBot(PyBot):
         if self.debug==2: print 'Got full hub string '+str(fullstr)
         cmd=fullstr[1].strip(self.commandprefix)
         if self.debug==2: print 'Parsed command: '+ str(cmd)
-        if cmd=='шлеп':
-            self.saytochat_me('отшлепал '+fullstr[2])
+        if cmd=='????':
+            self.saytochat_me('???????? '+fullstr[2])
         if cmd=='welcome':
             self.saytochat('Python standalone bot welcomes all over hub!')
         
@@ -34,7 +34,7 @@ class TestBot(PyBot):
         botip = get_ip_address(self.botif)
         print 'My up is: '+botip
         
-        useport=findfreeport(57017,58000)
+        useport=findfreeport(57023,58000)
         
         
         ds = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,12 +74,12 @@ class TestBot(PyBot):
                     if text[0]=='$ADCSND':
                         filename='files.xml.bz2'
                         print 'Reading '+text[4]+' bytes of data'
-                        tf=readsock_counted(csock,int(text[4]))
+                        tf=readsock_counted(csock,int(text[4])+7)
                         print 'Got '+str(len(tf))
                         FILE = io.open(filename,"wb")
-                        FILE.write(tf)
+                        FILE.write(tf[7:])
                         FILE.close
-                        #print tf
+                        print "files.xml.bz2 saved to current directory"
                     #if text[0]=='':
                     #random.randint(1,10000)
         return
