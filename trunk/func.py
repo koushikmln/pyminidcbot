@@ -4,6 +4,18 @@
 
 import socket, array, fcntl, struct
 
+#convert string to hex
+def toHex(s):
+    lst = []
+    for ch in s:
+        hv = hex(ord(ch)).replace('0x', '')
+        if len(hv) == 1:
+            hv = '0'+hv
+        lst.append(hv)
+    
+    return reduce(lambda x,y:x+y, lst)
+
+
 def findfreeport(startport, endport):
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
         port = startport
@@ -66,6 +78,26 @@ def lock2key2(lock):
             else:
                 result += chr(c)
         return result
+
+def readsock_counted(sock,count):
+        buff = ""
+        sock.settimeout(0.13)
+        while True:
+            try:
+                while True:
+                    t = sock.recv(1)
+                    buff += t
+                    #print '\n len='+str(len(buff))
+                    if len(buff)>=count: return buff
+                    
+            except socket.timeout:
+            
+                pass    # ?????????, ?? ????? ?? ????????? ?????
+            except socket.error, msg:
+                return    # ???????????? ?????? ??????
+        # ????? ? buff ????? ????? ?????, ?????? ? ??? ????? ??????? ?????????...
+        return buff
+
 
 def readsock(sock):
         buff = ""
