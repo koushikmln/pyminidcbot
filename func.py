@@ -23,9 +23,12 @@ def findfreeport(startport, endport):
                 try:
                         serversocket.bind(('localhost', port))
                 # You may want: serversocket.bind((socket.gethostname(), port))
-                except socket.error:
+                except socket.error as e:
+                        if e.errno==98:
                                 port = port+1
+                        else:
                                 raise
+                                
                 else:
                         break
         serversocket.close()
