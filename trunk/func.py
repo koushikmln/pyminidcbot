@@ -88,6 +88,36 @@ def readsock_counted(sock,count):
                     t = sock.recv(1)
                     buff += t
                     #print '\n len='+str(len(buff))
+                    #print info on each 10k
+                    lb=len(buff)
+                    if lb%10000==0: print "Already got "+str(lb)+" of "+str(count)
+                    
+                    
+                    if len(buff)>=count: return buff
+                    
+            except socket.timeout:
+            
+                pass    # ?????????, ?? ????? ?? ????????? ?????
+            except socket.error, msg:
+                return    # ???????????? ?????? ??????
+        # ????? ? buff ????? ????? ?????, ?????? ? ??? ????? ??????? ?????????...
+        return buff
+
+def readsock_counted_debug(sock,count):
+        buff = ""
+        sock.settimeout(0.13)
+        while True:
+            try:
+                while True:
+                    t = sock.recv(1)
+                    buff += t
+                    #print '\n len='+str(len(buff))
+                    #print info on each 10k
+                    lb=len(buff)
+                    if lb%(10*1024)==0:
+                        print "Already got "+str(lb)+" of "+str(count)+" "+str(100*lb/count)+"% completed"
+                        #print buff
+                    
                     if len(buff)>=count: return buff
                     
             except socket.timeout:
