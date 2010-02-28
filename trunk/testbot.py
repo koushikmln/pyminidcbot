@@ -10,13 +10,13 @@ import random, io
 
 class TestBot(PyBot):
     botnick='TestBot'
-    HOST='127.0.0.1'
-    PORT=4111
+    HOST='10.4.20.2'
+    PORT=411
     botif='eth0'
-    botip='127.0.0.1'
+    botip='192.168.1.4'
     debug=1
     #for temp
-    useport=50006
+    useport=6881
     #for testing will use @ as command prefix
     commandprefix='@'
     
@@ -98,5 +98,5 @@ class TestBot(PyBot):
 tbot=TestBot()
 tbot.login()
 print 'Login Complete'
-tbot.DownloadFL('777')
+tbot.DownloadFL('dr-evil')
 #tbot.workloop()
